@@ -1,46 +1,91 @@
-import OpenAI from 'openai';
+import { getChatModel, getOpenAI } from '@/lib/openai';
+import { buildSystemPrompt } from '@/lib/prompt';
+import type { ChatMessage, CompanionInput } from '@/lib/types';
 
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-  baseURL: process.env.OPENAI_BASE_URL,
-});
-
-export type CompanionInput = {
-  name: string;
-  personality?: string;
-  backstory?: string;
-  tone?: string;
-  exampleLines?: string;
-};
-
-export function buildSystemPrompt(input: CompanionInput): string {
-  const parts: string[] = [];
-  parts.push(`You are ${input.name}, an AI companion created by a user.`);
-  if (input.personality) parts.push(`Personality: ${input.personality}`);
-  if (input.backstory) parts.push(`Backstory: ${input.backstory}`);
-  if (input.tone) parts.push(`Tone: ${input.tone}`);
-  if (input.exampleLines) parts.push(`Example lines the user likes:\n${input.exampleLines}`);
-  parts.push('Stay in character. Remember the conversation. Be warm, consistent, and engaging. Never break the fourth wall unless asked.');
-  return parts.join('\n\n');
-}
+export type { CompanionInput };
+export { buildSystemPrompt };
 
 export async function chatWithCompanion(
   input: CompanionInput,
-  history: { role: 'user' | 'assistant'; content: string }[],
-  userMessage: string
-) {
-  const system = buildSystemPrompt(input);
+  history: ChatMessage[],
+  userMessage: string,
+  opts?: {
+    systemPromptOverride?: string;
+    memoryFacts?: string[];
+    userDisplayName?: string | null;
+  }
+): Promise<string> {
+  const openai = getOpenAI();
+  const system =
+    opts?.systemPromptOverride ||
+    buildSystemPrompt(input, {
+      memoryFacts: opts?.memoryFacts,
+      userDisplayName: opts?.userDisplayName,
+    });
+
   const messages = [
     { role: 'system' as const, content: system },
-    ...history,
+    ...history.map((m) => ({
+      role: m.role as 'user' | 'assistant',
+      content: m.content,
+    })),
     { role: 'user' as const, content: userMessage },
   ];
 
   const completion = await openai.chat.completions.create({
-    model: process.env.OPENAI_MODEL || 'gpt-4o-mini',
+    model: getChatModel(),
     messages,
-    temperature: 0.8,
+    temperature: 0.85,
+    presence_penalty: 0.3,
+    frequency_penalty: 0.2,
   });
 
-  return completion.choices[0]?.message?.content ?? 'I\'m here for you.';
+  return completion.choices[0]?.message?.content ?? "I'm here for you.";
+}
+
+export async function generateOutreachMessage(params: {
+  companionName: string;
+  systemPrompt: string;
+  occasion: string;
+  userDisplayName?: string | null;
+  memoryFacts?: string[];
+  timezone?: string;
+}): Promise<string> {
+  const openai = getOpenAI();
+  const memories =
+    params.memoryFacts && params.memoryFacts.length > 0
+      ? params.memoryFacts.map((f) => `- ${f}`).join('\n')
+      : '(no specific memories yet — still be personal and warm)';
+
+  const completion = await openai.chat.completions.create({
+    model: getChatModel(),
+    temperature: 0.9,
+    messages: [
+      {
+        role: 'system',
+        content: [
+          params.systemPrompt,
+          '',
+          'You are writing a proactive check-in message to the user (they did not message you first).',
+          'Make it feel spontaneous and personal — never like a holiday template or marketing blast.',
+          '1–4 short sentences. Sign with your companion voice, not a corporate closer.',
+        ].join('\n'),
+      },
+      {
+        role: 'user',
+        content: [
+          `Occasion: ${params.occasion}`,
+          `User name: ${params.userDisplayName || 'them'}`,
+          `Timezone context: ${params.timezone || 'America/Chicago'}`,
+          `Memories you can weave in:\n${memories}`,
+          `Write as ${params.companionName} reaching out.`,
+        ].join('\n\n'),
+      },
+    ],
+  });
+
+  return (
+    completion.choices[0]?.message?.content ??
+    `Thinking of you today. — ${params.companionName}`
+  );
 }
