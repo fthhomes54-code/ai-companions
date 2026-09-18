@@ -1,4 +1,4 @@
-# Companion
+# Companion1
 
 User-generated AI companion platform — Chinese viral **emotional-attachment** style.
 

@@ -3,7 +3,7 @@ import Link from 'next/link';
 import './globals.css';
 
 export const metadata: Metadata = {
-  title: 'Companion — Someone who remembers you',
+  title: 'Companion1 — Someone who remembers you',
   description:
     'Create an AI companion that feels alive: long-term memory, proactive holiday messages, voice, and emotional presence.',
 };
@@ -14,7 +14,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body>
         <header className="nav">
           <Link href="/" className="logo">
-            Companion
+            Companion1
           </Link>
           <nav className="row" style={{ gap: 16 }}>
             <Link href="/create">Create</Link>

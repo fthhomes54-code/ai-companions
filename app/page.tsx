@@ -11,14 +11,14 @@ export default function Home() {
           remembers you.
         </h1>
         <p className="muted" style={{ fontSize: '1.15rem', maxWidth: 560, lineHeight: 1.55 }}>
-          Companion is a user-generated AI companion platform built for that viral Chinese
+          Companion1 is a user-generated AI companion platform built for that viral Chinese
           emotional-attachment loop: create someone who feels alive, recalls weeks-old details,
           and texts you on Valentine&apos;s, Christmas, your birthday — not with templates, but
           with personalized notes.
         </p>
         <div className="row" style={{ marginTop: 24, flexWrap: 'wrap' }}>
           <Link href="/create">
-            <button>Create your Companion</button>
+            <button>Create on Companion1</button>
           </Link>
           <Link href="/chat">
             <button className="ghost">Open chat</button>
@@ -65,7 +65,7 @@ export default function Home() {
       </section>
 
       <p className="muted" style={{ marginTop: 40, fontSize: '0.85rem' }}>
-        Adults only. Companion is for emotional connection — not exploitation.
+        Adults only. Companion1 is for emotional connection — not exploitation.
       </p>
     </main>
   );

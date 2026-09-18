@@ -98,7 +98,7 @@ export default function CreateCompanion() {
   return (
     <main className="container" style={{ maxWidth: 600 }}>
       <div className="card">
-        <h1 style={{ marginTop: 0 }}>Create your Companion</h1>
+        <h1 style={{ marginTop: 0 }}>Create on Companion1</h1>
         <p className="muted">
           Shape who they are. We turn this into a rich system prompt stored on your account.
         </p>
@@ -173,7 +173,7 @@ export default function CreateCompanion() {
               onChange={(e) => setAgeVerified(e.target.checked)}
             />
             <span>
-              I confirm I am <strong>18 or older</strong>. Companion is an adults-only emotional
+              I confirm I am <strong>18 or older</strong>. Companion1 is an adults-only emotional
               product.
             </span>
           </label>

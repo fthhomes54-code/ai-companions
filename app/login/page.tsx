@@ -62,7 +62,7 @@ export default function LoginPage() {
   return (
     <main className="container" style={{ maxWidth: 440 }}>
       <div className="card">
-        <h1 style={{ marginTop: 0 }}>Sign in to Companion</h1>
+        <h1 style={{ marginTop: 0 }}>Sign in to Companion1</h1>
         <p className="muted">Your companions and memories live on your account.</p>
         <form onSubmit={submit}>
           <label>
